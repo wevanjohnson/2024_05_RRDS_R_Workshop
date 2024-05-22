@@ -20,12 +20,12 @@ These are the materials for the Red Rock Data Science R Tutorial. Hopefully they
 | Day         | Topics                                |
 | :-----------| :------------------------------------ |
 | 8:00-9:00am | Introduction to R programming for beginners |
-| 9:00-10:00am | Literate programming with R markdown  |
-| 10:00-11:00am | Introduction to the tidyverse        |
+| 9:00-10:00am | Literate programming with R markdown |
+| 10:00-11:00am | Introduction to the tidyverse       |
 | 11:00am-12:00pm | Graphing and visualizing data with ggplot2 |
-| 12:00-1:00pm | Lunch Break     |
-| 1:00-2:00pm | Creating R packages                   |
-| 2:00-3:00pm | Shiny programming, Part 1              |
+| 12:00-1:00pm | Lunch Break                          |
+| 1:00-2:00pm  | Creating R packages                   |
+| 2:00-3:00pm  | Shiny programming, Part 1             |
 
 
 
