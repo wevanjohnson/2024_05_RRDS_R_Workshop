@@ -1,0 +1,456 @@
+---
+title: "Red Rock Data Science Workshop 3 - R Shiny"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE, fig.width = 6, fig.height = 4)
+options(width = 55)
+```
+
+## Problem 1 - K Means Tutorial {.tabset}
+
+This is a break down for the k-means example shiny app into easy to understand steps, adding a few shiny elements at a time. Is is adapted from the [Kmeans example code from Joe Cheng at RStudio](https://shiny.rstudio.com/gallery/kmeans-example.html). 
+
+For each step, run the code and see how the app changes. Then below each code chunk, describe exactly what is being changed/added at that step. Make sure to install and load the `shiny` library before you get started. 
+
+### Step 00: Template
+```{r, template, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      
+    )
+  )
+)
+
+server <- function(input, output, session) {
+
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+### Step 01: Title Panel
+```{r, add title panel, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 02: UI inputs
+```{r, add ui inputs, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 03: UI outputs
+```{r, add ui outputs, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 04: Output plot
+```{r, add output plot, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$plot1 <- renderPlot({
+    plot(iris[,c("Sepal.Length","Sepal.Width")])
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 05: Reactive Axes
+```{r, add reactive axes, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$plot1 <- renderPlot({
+    plot(iris[,c(input$xcol,input$ycol)])
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 06: K means
+```{r, add K means clustering, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+
+  output$plot1 <- renderPlot({
+    plot(iris[,c(input$xcol,input$ycol)],
+         col = kmeans(iris[,c(input$xcol,input$ycol)], input$clusters)$cluster)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 07: Cluster centers
+```{r, add cluster centers, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+  output$plot1 <- renderPlot({
+    plot(iris[,c(input$xcol,input$ycol)],
+         col = kmeans(iris[,c(input$xcol,input$ycol)], input$clusters)$cluster)
+    points(kmeans(iris[,c(input$xcol,input$ycol)], input$clusters)$centers, pch = 4, cex = 4, lwd = 4)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 08: Save Kmeans
+```{r, save k means result as reactive, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+  clusters <- reactive({
+    kmeans(iris[,c(input$xcol,input$ycol)], input$clusters)
+  })
+  
+  output$plot1 <- renderPlot({
+    plot(iris[,c(input$xcol,input$ycol)],
+         col = clusters()$cluster)
+    points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Step 09: Final App
+```{r, final app, eval=F, echo=T}
+ui <- fluidPage(
+  
+  # Put a titlePanel here
+  titlePanel("k-means clustering"),
+  
+  sidebarLayout(
+    # Sidebar. Put your inputs inside the sidebarPanel
+    sidebarPanel(
+      selectInput('xcol', 'X Variable', names(iris)),
+      selectInput('ycol', 'Y Variable', names(iris),
+                  selected=names(iris)[[2]]),
+      numericInput('clusters', 'Cluster count', 3,
+                   min = 1, max = 9)
+    ),
+    
+    # Main panel. put your output plot here
+    mainPanel(
+      plotOutput('plot1')
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+  selectedData <- reactive({
+    iris[, c(input$xcol, input$ycol)]
+  })
+  
+  clusters <- reactive({
+    kmeans(selectedData(), input$clusters)
+  })
+  
+  output$plot1 <- renderPlot({
+    palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
+              "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
+    
+    par(mar = c(5.1, 4.1, 0, 1))
+    plot(selectedData(),
+         col = clusters()$cluster,
+         pch = 20, cex = 3)
+    points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+
+# Problem 2 - R Shiny for mtcars
+The `mtcars` data set was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models). This data set is already built into **R**. You can load it by typing `data(mtcars)`. Once you do that, you should change the `cyl`, `vs`, `am`, `gear`, and `carb` variables to be factors rather than numeric. 
+
+Your job is to build an app that has the following:
+
+* A title for the app.
+* An input select box that lets the user specify which variable in the data set they are selecting.
+* An input select box that lets the user specify what type of plot to use, either a histogram, box plot, or bar plot. 
+* The app should then output the plot of the variable that is selcted. The plot should have a nice color, a title, and easy to read axes. 
+* If the variable is quantiative and a bar plot is selected, then a message should appear to the user indicating the wrong type of plot is selected.
+* Likewise, if the variable is categorical and a histogram or box plot is selected, then a message should appear to the user indicating the wrong type of plot is selected.
+
+Some hints:
+
+* The app will need a `ui` element, a `server` function, and the last line should be `shinyApp(server = server, ui = ui)`. 
+* Add items to your app one at a time and run it often to make sure things are working as expected.
+* You'll need both a `renderText()` and a `renderPlot()` function in the server.
+* `if` statements are very useful in these shiny apps.
+* The variable selected by the user will be saved as an object in `input$`. You should use the `reactive()` functions to save it as an object in the `server` function and then access it in the `render...()` functions by typing its name with parentheses `()` at the end. For example, if you save it as `var_select` then you will access it as `var_select()` in the `reactive()` functions.
+* In `ggplot`, we are used to calling the name of the variable we are plotting in the `aes()` function. However, the variable we are plotting is being chosen by the user and is reactive. You can access the variable you want by putting `mtcars` as the first argument in `ggplot` and then by putting `aes(x = .data[[var_select()]])`, if you saved your variable as `var_select` in the server function. That `.data` will refer back to whatever data set you entered into the `ggplot` function. So, it will look like `ggplot(mtcars, aes(x = .data[[var_select()]]))`. Of course, you can change that `x` to an `y` where appropriate. 
+
+One more thing about R Markdown. If you change the **R** code chunk option from `eval = F` to `eval = T` after building your app, the code will run, but the app will not be interactive. It is just a static file. You can make it interaction by adding `runtime: shiny` (not indented) to the bottom of the YAML (under the `editor_options:` section). If you save the file, the Knit button at the top should change to a play button that says "Run Document". If you click that, it will make the document interactive. You cannot save and share the output of document in this state, though. 
+
+```{r mtcars_app, eval = F, echo = T}
+library(tidyverse)
+library(shiny)
+data(mtcars)
+mtcars <- mtcars |>
+  mutate(
+    cyl = factor(cyl),
+    vs = factor(vs),
+    am = factor(am),
+    gear = factor(gear),
+    carb = factor(carb)
+  ) |>
+  tibble()
+
+ui <- fluidPage(
+  titlePanel("Graphs for mtcars"),
+  selectInput(
+    inputId = "var1", label = "Select a Variable to Plot",
+    choices = names(mtcars)
+  ),
+  selectInput(
+    inputId = "plot_type", label = "Select the Type of Plot",
+    choices = c("Histogram", "Boxplot", "Barplot")
+  ),
+  textOutput("text"),
+  plotOutput("plot")
+)
+
+server <- function(input, output) {
+  var1 <- reactive(input$var1)
+  plot_type <- reactive(input$plot_type)
+  output$text <- renderText({
+    if (class(mtcars[[var1()]]) == "numeric" &
+      plot_type() == "Barplot" |
+      class(mtcars[[var1()]]) != "numeric" &
+        plot_type() %in% c("Histogram", "Boxplot")) {
+      "This type of graph is not appropriate for the selected variable."
+    }
+  })
+  output$plot <- renderPlot({
+    if (plot_type() == "Histogram") {
+      if (class(mtcars[[var1()]]) == "numeric") {
+        ggplot(mtcars, aes(x = .data[[var1()]])) +
+          geom_histogram(bins = 20, color = "black", fill = "lightblue") +
+          labs(x = var1(), title = paste("Histogram of", var1())) +
+          theme(axis.title = element_text(size = 20),
+                plot.title = element_text(size = 22, face = "bold"))
+      }
+    } else if (plot_type() == "Boxplot") {
+      if (class(mtcars[[var1()]]) == "numeric") {
+        ggplot(mtcars, aes(y = .data[[var1()]])) +
+          geom_boxplot(color = "black", fill = "lightblue") +
+          labs(x = var1(), title = paste("Box Plot of", var1())) +
+          theme(axis.title = element_text(size = 20),
+                plot.title = element_text(size = 22, face = "bold"))
+      }
+    } else if (plot_type() == "Barplot") {
+      if (class(mtcars[[var1()]]) != "numeric") {
+        ggplot(mtcars, aes(x = .data[[var1()]])) +
+          geom_bar(color = "black", fill = "lightblue") +
+          labs(x = var1(), title = paste("Barplot of", var1())) +
+          theme(axis.title = element_text(size = 20),
+                plot.title = element_text(size = 22, face = "bold"))
+      }
+    }
+  })
+}
+shinyApp(server = server, ui = ui)
+```
+
