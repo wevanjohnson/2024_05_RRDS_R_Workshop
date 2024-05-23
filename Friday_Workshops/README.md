@@ -1,1 +1,2 @@
-This directory will contain the workshop practice assignmens and data files. 
+## R Workshops
+This directory contains the workshop practice assignmens and data files that we discussed on Friday, May 24th. Feel free to email Rick Brown <richardbrown1@suu.edu> if you have any questions about these workshops.
